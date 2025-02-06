@@ -1,6 +1,8 @@
 package com.cleaningservice.dbaccess;
 
 import com.cleaningservice.model.Service;
+import com.cleaningservice.model.ServiceCategory;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,75 @@ public class ServiceDAO {
 	        }
 
 	        return price;
+	    }
+	    private final ServiceCategoryDAO serviceCategoryDAO = new ServiceCategoryDAO();
+
+	    public Service getServiceDetails(int serviceId) {
+	        String sql = "SELECT s.ServiceID, s.ServiceName, s.Description, s.Price, s.ImageURL, s.CategoryID " +
+	                     "FROM Service s " +
+	                     "WHERE s.ServiceID = ?";
+	        Service service = null;
+
+	        try (Connection conn = DBConnection.getConnection();
+	             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+	            stmt.setInt(1, serviceId);
+
+	            try (ResultSet rs = stmt.executeQuery()) {
+	                if (rs.next()) {
+	                    service = new Service();
+	                    service.setServiceId(rs.getInt("ServiceID"));
+	                    service.setServiceName(rs.getString("ServiceName"));
+	                    service.setDescription(rs.getString("Description"));
+	                    service.setPrice(rs.getDouble("Price"));
+	                    service.setImagePath(rs.getString("ImageURL"));
+	                    service.setCategoryId(rs.getInt("CategoryID"));
+
+	                    // Fetch category details using ServiceCategoryDAO
+	                    ServiceCategory category = serviceCategoryDAO.getServiceCategoryById(service.getCategoryId());
+	                    if (category != null) {
+	                        service.setCategoryName(category.getCategoryName());
+	                    }
+	                }
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+
+	        return service;
+	    }
+	    
+	    public List<Service> getAllServices() {
+	        List<Service> services = new ArrayList<>();
+	        String sql = "SELECT ServiceID, ServiceName, Description, Price, ImageURL, CategoryID FROM Service";
+
+	        try (Connection conn = DBConnection.getConnection();
+	             PreparedStatement stmt = conn.prepareStatement(sql);
+	             ResultSet rs = stmt.executeQuery()) {
+
+	            while (rs.next()) {
+	                Service service = new Service();
+	                service.setServiceId(rs.getInt("ServiceID"));
+	                service.setServiceName(rs.getString("ServiceName"));
+	                service.setDescription(rs.getString("Description"));
+	                service.setPrice(rs.getDouble("Price"));
+	                service.setImagePath(rs.getString("ImageURL"));
+	                service.setCategoryId(rs.getInt("CategoryID"));
+
+	                // Fetch category details using ServiceCategoryDAO
+	                ServiceCategory category = serviceCategoryDAO.getServiceCategoryById(service.getCategoryId());
+	                if (category != null) {
+	                    service.setCategoryName(category.getCategoryName()); // Set category name
+	                }
+	                services.add(service);
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+
+	        return services;
 	    }
 
 
