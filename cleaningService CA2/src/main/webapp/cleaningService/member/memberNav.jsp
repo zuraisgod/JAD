@@ -3,8 +3,8 @@
         <a href="${pageContext.request.contextPath}/cleaningService/member/memberIndex.jsp" class="nav-logo">Cleaning Services</a>
         <ul class="nav-links">
             <li><a href="${pageContext.request.contextPath}/cleaningService/member/memberIndex.jsp">Home</a></li>
-            <li><a href="${pageContext.request.contextPath}/cleaningService/cart/cart.jsp">Cart</a></li>
-            <li><a href="${pageContext.request.contextPath}/cleaningService/profile/profile.jsp">Profile</a></li>
+            <li><a href="<%= request.getContextPath() %>/cartServlet">View Cart</a></li>
+            <li><a href="<%= request.getContextPath() %>/ProfileServlet">Profile</a></li>
             <li><a href="${pageContext.request.contextPath}/cleaningService/logoutServlet">Logout</a></li>
         </ul>
     </div>

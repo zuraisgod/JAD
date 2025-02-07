@@ -1,13 +1,23 @@
 package com.cleaningservice.model;
 
 public class CartItem {
-    private int cartId;         // ID of the cart
-    private String serviceName; // Name of the service
-    private int quantity;       // Quantity of the service added to the cart
-    private double price;       // Price of the service
-    private double totalPrice;  // Total price for the quantity of the service
+    private int cartItemId;  // Primary key for the cart item
+    private int cartId;      // Foreign key referencing the cart table
+    private int serviceId;   // Foreign key referencing the service table
+    private String serviceName; // Name of the service (fetched via JOIN)
+    private int quantity;    // Quantity of the service
+    private double price;    // Price of the service (fetched via JOIN)
+    private double totalPrice; // Calculated price (quantity * price)
 
-    // Getter and Setter for cartId
+    // Getters and Setters
+    public int getCartItemId() {
+        return cartItemId;
+    }
+
+    public void setCartItemId(int cartItemId) {
+        this.cartItemId = cartItemId;
+    }
+
     public int getCartId() {
         return cartId;
     }
@@ -16,7 +26,14 @@ public class CartItem {
         this.cartId = cartId;
     }
 
-    // Getter and Setter for serviceName
+    public int getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(int serviceId) {
+        this.serviceId = serviceId;
+    }
+
     public String getServiceName() {
         return serviceName;
     }
@@ -25,7 +42,6 @@ public class CartItem {
         this.serviceName = serviceName;
     }
 
-    // Getter and Setter for quantity
     public int getQuantity() {
         return quantity;
     }
@@ -34,7 +50,6 @@ public class CartItem {
         this.quantity = quantity;
     }
 
-    // Getter and Setter for price
     public double getPrice() {
         return price;
     }
@@ -43,7 +58,6 @@ public class CartItem {
         this.price = price;
     }
 
-    // Getter and Setter for totalPrice
     public double getTotalPrice() {
         return totalPrice;
     }
@@ -52,11 +66,12 @@ public class CartItem {
         this.totalPrice = totalPrice;
     }
 
-    // Optional: Override toString() for easier debugging
     @Override
     public String toString() {
         return "CartItem{" +
-                "cartId=" + cartId +
+                "cartItemId=" + cartItemId +
+                ", cartId=" + cartId +
+                ", serviceId=" + serviceId +
                 ", serviceName='" + serviceName + '\'' +
                 ", quantity=" + quantity +
                 ", price=" + price +

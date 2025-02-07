@@ -2,7 +2,6 @@ package com.cleaningservice.dbaccess;
 
 import com.cleaningservice.model.Service;
 import com.cleaningservice.model.ServiceCategory;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +48,7 @@ public class ServiceDAO {
 
 	        return price;
 	    }
+<<<<<<< Updated upstream
 	    private final ServiceCategoryDAO serviceCategoryDAO = new ServiceCategoryDAO();
 
 	    public Service getServiceDetails(int serviceId) {
@@ -139,6 +139,8 @@ public class ServiceDAO {
 	            return false;
 	        }
 	    }
+=======
+>>>>>>> Stashed changes
 
 
 }

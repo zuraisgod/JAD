@@ -5,11 +5,11 @@ import com.cleaningservice.model.Service;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/services")
+@CrossOrigin(origins = "http://localhost:8080")
 public class ServiceController {
 
     private final ServiceDAO serviceDAO = new ServiceDAO();
@@ -18,6 +18,7 @@ public class ServiceController {
     public List<Service> getServicesByCategory(@PathVariable int categoryId) {
         return serviceDAO.getServicesByCategory(categoryId);
     }
+<<<<<<< Updated upstream
 
     @GetMapping
     public List<Service> getAllServices() {
@@ -49,4 +50,6 @@ public class ServiceController {
         boolean success = serviceDAO.updateService(existingService);
         return success ? "Service updated successfully" : "Error updating service";
     }
+=======
+>>>>>>> Stashed changes
 }

@@ -9,7 +9,7 @@
     <div class="container">
         <h1>Cart Status</h1>
         <p><%= request.getAttribute("message") %></p>
-        <a href="<%= request.getContextPath() %>/cleaningService/cart/cart.jsp" class="cart-link">See Your Cart</a>
+        <a href="<%= request.getContextPath() %>/cartServlet">See Your Cart</a>
     </div>
 </body>
 </html>
