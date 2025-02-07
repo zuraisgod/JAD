@@ -52,7 +52,7 @@ public class AdminDashboardServlet extends HttpServlet {
             request.setAttribute("err", "NotFound");
         }
 
-        // ✅ FIX: Use the correct path for adminDashboard.jsp
+
         RequestDispatcher rd = request.getRequestDispatcher("/cleaningService/admin/adminDashboard.jsp");
 
         rd.forward(request, response);

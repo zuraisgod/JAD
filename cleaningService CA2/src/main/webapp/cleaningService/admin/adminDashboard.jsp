@@ -43,44 +43,51 @@
         }
     %>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Service ID</th>
-                <th>Service Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Category Name</th>
-                <th>Image</th>
-            </tr>
-        </thead>
-        <tbody>
-            <%
-                @SuppressWarnings("unchecked")
-                ArrayList<Service> services = (ArrayList<Service>) request.getAttribute("services");
+<table>
+    <thead>
+        <tr>
+            <th>Service ID</th>
+            <th>Service Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Category Name</th>
+            <th>Image</th>
+            <th>Action</th> <%-- New column for Edit button --%>
+        </tr>
+    </thead>
+    <tbody>
+        <%
+            @SuppressWarnings("unchecked")
+            ArrayList<Service> services = (ArrayList<Service>) request.getAttribute("services");
 
-                if (services != null && !services.isEmpty()) {
-                    for (Service service : services) {
-            %>
-                <tr>
-                    <td><%= service.getServiceId() %></td>
-                    <td><%= service.getServiceName() %></td>
-                    <td><%= service.getDescription() %></td>
-                    <td>$<%= service.getPrice() %></td>
-                    <td><%= service.getCategoryName() %></td>
-                    <td><img src="<%= service.getImagePath() %>" alt="Service Image"></td>
-                </tr>
-            <%
-                    }
-                } else {
-            %>
-                <tr>
-                    <td colspan="6" style="text-align:center;">No services available.</td>
-                </tr>
-            <%
+            if (services != null && !services.isEmpty()) {
+                for (Service service : services) {
+        %>
+            <tr>
+                <td><%= service.getServiceId() %></td>
+                <td><%= service.getServiceName() %></td>
+                <td><%= service.getDescription() %></td>
+                <td>$<%= service.getPrice() %></td>
+                <td><%= service.getCategoryName() %></td>
+                <td><img src="<%= service.getImagePath() %>" alt="Service Image"></td>
+                <td>
+                    <a href="<%=request.getContextPath()%>/admin/editService?serviceId=<%= service.getServiceId() %>">
+                        <button>Edit</button>
+                    </a>
+                </td> <%-- Edit button redirects to editService.jsp --%>
+            </tr>
+        <%
                 }
-            %>
-        </tbody>
-    </table>
+            } else {
+        %>
+            <tr>
+                <td colspan="7">No services found.</td>
+            </tr>
+        <%
+            }
+        %>
+    </tbody>
+</table>
+
 </body>
 </html>

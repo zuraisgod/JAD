@@ -118,6 +118,27 @@ public class ServiceDAO {
 
 	        return services;
 	    }
+	    public boolean updateService(Service service) {
+	        String query = "UPDATE Service SET ServiceName = ?, Description = ?, Price = ?, ImageURL = ?, CategoryID = ? WHERE ServiceID = ?";
+	        
+	        try (Connection conn = DBConnection.getConnection();
+	             PreparedStatement stmt = conn.prepareStatement(query)) {
+	            
+	            stmt.setString(1, service.getServiceName());
+	            stmt.setString(2, service.getDescription());
+	            stmt.setDouble(3, service.getPrice());
+	            stmt.setString(4, service.getImagePath());
+	            stmt.setInt(5, service.getCategoryId());
+	            stmt.setInt(6, service.getServiceId());
+	            
+	            int rowsUpdated = stmt.executeUpdate();
+	            return rowsUpdated > 0;
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
 
 
 }
