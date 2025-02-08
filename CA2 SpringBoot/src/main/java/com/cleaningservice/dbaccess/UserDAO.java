@@ -147,7 +147,49 @@ public class UserDAO {
         }
         return bookings;
     }
-
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setName(rs.getString("Name"));
+                user.setEmail(rs.getString("Email"));
+                user.setContactNumber(rs.getString("ContactNumber"));
+                user.setAddress(rs.getString("Address"));
+                user.setRole(rs.getString("Role"));
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+    public List<User> getAllMembers() {
+        List<User> members = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE role = 'Member'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setName(rs.getString("Name"));
+                user.setEmail(rs.getString("Email"));
+                user.setContactNumber(rs.getString("ContactNumber"));
+                user.setAddress(rs.getString("Address"));
+                user.setRole(rs.getString("Role"));
+                members.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return members;
+    }
+    
 
 
 

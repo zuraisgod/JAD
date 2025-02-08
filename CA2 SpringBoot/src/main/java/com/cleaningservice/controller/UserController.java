@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:8080")
+
 public class UserController {
 
     private final UserDAO userDAO = new UserDAO();
@@ -93,7 +93,13 @@ public class UserController {
         return userDAO.getUserBookings(userId);
     }
 
-    
-    
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userDAO.getAllUsers();
+    }
+    @GetMapping("/members")
+    public List<User> getAllMembers() {
+        return userDAO.getAllMembers();
+    }
 
 }

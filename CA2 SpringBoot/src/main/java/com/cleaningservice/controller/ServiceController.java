@@ -6,10 +6,11 @@ import com.cleaningservice.model.Service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/services")
-@CrossOrigin(origins = "http://localhost:8080")
+
 public class ServiceController {
 
     private final ServiceDAO serviceDAO = new ServiceDAO();
@@ -18,7 +19,7 @@ public class ServiceController {
     public List<Service> getServicesByCategory(@PathVariable int categoryId) {
         return serviceDAO.getServicesByCategory(categoryId);
     }
-<<<<<<< Updated upstream
+
 
     @GetMapping
     public List<Service> getAllServices() {
@@ -50,6 +51,29 @@ public class ServiceController {
         boolean success = serviceDAO.updateService(existingService);
         return success ? "Service updated successfully" : "Error updating service";
     }
-=======
->>>>>>> Stashed changes
+    @PostMapping
+    public String addService(@RequestBody Service service) {
+        boolean isAdded = serviceDAO.addService(service.getCategoryId(), service.getServiceName(), service.getDescription(),
+                service.getPrice(), service.getImagePath());
+        if (isAdded) {
+            return "Service added successfully";
+        } else {
+            return "Failed to add service";
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteService(@PathVariable int id) {
+        boolean isDeleted = serviceDAO.deleteService(id);
+        if (isDeleted) {
+            return "Service deleted successfully";
+        } else {
+            return "Failed to delete service or service not found";
+        }
+    }
+    @GetMapping("/search")
+    public List<Service> searchServices(@RequestParam String keyword) {
+        return serviceDAO.searchServices(keyword);
+    }
+    
 }

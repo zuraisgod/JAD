@@ -42,7 +42,18 @@
         
         <input type="submit" value="Update Service">
     </form>
+    <form id="deleteForm" action="<%=request.getContextPath()%>/admin/deleteService" method="post">
+    <input type="hidden" name="serviceId" value="<%= service.getServiceId() %>">
+    <input type="submit" value="Delete Service" onclick="return confirmDelete();">
+    </form>
+
+	<script>
+	    function confirmDelete() {
+	        return confirm("Are you sure you want to delete this service?");
+	    }
+	</script>
+    
     <br>
-    <a href="adminDashboard.jsp">Back to Dashboard</a>
+    <a href="<%=request.getContextPath()%>/admin/dashboard">Back to Dashboard</a>
 </body>
 </html>

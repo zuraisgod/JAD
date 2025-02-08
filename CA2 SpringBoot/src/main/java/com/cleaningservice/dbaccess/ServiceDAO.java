@@ -48,7 +48,7 @@ public class ServiceDAO {
 
 	        return price;
 	    }
-<<<<<<< Updated upstream
+
 	    private final ServiceCategoryDAO serviceCategoryDAO = new ServiceCategoryDAO();
 
 	    public Service getServiceDetails(int serviceId) {
@@ -139,8 +139,56 @@ public class ServiceDAO {
 	            return false;
 	        }
 	    }
-=======
->>>>>>> Stashed changes
+	    public boolean deleteService(int id) {
+	        try (Connection conn = DBConnection.getConnection();
+	             PreparedStatement stmt = conn.prepareStatement("DELETE FROM Service WHERE ServiceID = ?")) {
+	            stmt.setInt(1, id);
+	            int rowsAffected = stmt.executeUpdate();
+	            return rowsAffected > 0;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
+	    public boolean addService(int categoryId, String serviceName, String description, double price, String imageUrl) {
+	        String sql = "INSERT INTO Service (CategoryID, ServiceName, Description, Price, ImageURL) VALUES (?, ?, ?, ?, ?)";
+	        try (Connection conn = DBConnection.getConnection();
+	             PreparedStatement stmt = conn.prepareStatement(sql)) {
+	            stmt.setInt(1, categoryId);
+	            stmt.setString(2, serviceName);
+	            stmt.setString(3, description);
+	            stmt.setDouble(4, price);
+	            stmt.setString(5, imageUrl);
+	            int rowsInserted = stmt.executeUpdate();
+	            return rowsInserted > 0;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
+	    public List<Service> searchServices(String keyword) {
+	        List<Service> services = new ArrayList<>();
+	        String sql = "SELECT * FROM Service WHERE ServiceName LIKE ? OR Description LIKE ?";
+	        try (Connection conn = DBConnection.getConnection();
+	             PreparedStatement stmt = conn.prepareStatement(sql)) {
+	            stmt.setString(1, "%" + keyword + "%");
+	            stmt.setString(2, "%" + keyword + "%");
+	            ResultSet rs = stmt.executeQuery();
+	            while (rs.next()) {
+	                Service service = new Service();
+	                service.setServiceId(rs.getInt("ServiceID"));
+	                service.setCategoryId(rs.getInt("CategoryID"));
+	                service.setServiceName(rs.getString("ServiceName"));
+	                service.setDescription(rs.getString("Description"));
+	                service.setPrice(rs.getDouble("Price"));
+	                service.setImagePath(rs.getString("ImageURL"));
+	                services.add(service);
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return services;
+	    }
 
 
 }
