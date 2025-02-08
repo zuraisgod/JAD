@@ -7,6 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -24,10 +25,15 @@ public class EditMemberServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int userId = Integer.parseInt(request.getParameter("userId"));
 
-        // Logic to fetch user details from API and set in request scope
+        // Logic to fetch user details from API
         User user = fetchUserDetails(userId);
+
         if (user != null) {
-            request.setAttribute("user", user);
+            // Set the user object in the session
+            HttpSession session = request.getSession();
+            session.setAttribute("user", user);
+
+            // Forward to the editMember.jsp page
             RequestDispatcher rd = request.getRequestDispatcher("/cleaningService/admin/editMember.jsp");
             rd.forward(request, response);
         } else {
@@ -39,7 +45,7 @@ public class EditMemberServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int userId = Integer.parseInt(request.getParameter("userId"));
 
-        // Create a User object and use setter methods to populate fields
+        // Create a User object and populate it using setter methods
         User user = new User();
         user.setUserId(userId);
         user.setName(request.getParameter("name"));
@@ -54,7 +60,7 @@ public class EditMemberServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/admin/members?success=MemberUpdated");
         } else {
             request.setAttribute("error", "Failed to update member details");
-            doGet(request, response);
+            doGet(request, response); // Reload the form with error message
         }
     }
 
