@@ -1,10 +1,13 @@
 package com.cleaningservice.dbaccess;
 
 import com.cleaningservice.model.Service;
-import com.cleaningservice.model.ServiceCategory;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import com.cleaningservice.model.ServiceCategory;
 
 public class ServiceDAO {
 	public List<Service> getServicesByCategory(int categoryId) {
@@ -48,10 +51,11 @@ public class ServiceDAO {
 
 	        return price;
 	    }
-
+	  
+	  /*Alex service part*/
 	    private final ServiceCategoryDAO serviceCategoryDAO = new ServiceCategoryDAO();
 
-	    public Service getServiceDetails(int serviceId) {
+	  public Service getServiceDetails(int serviceId) {
 	        String sql = "SELECT s.ServiceID, s.ServiceName, s.Description, s.Price, s.ImageURL, s.CategoryID " +
 	                     "FROM Service s " +
 	                     "WHERE s.ServiceID = ?";
@@ -187,6 +191,41 @@ public class ServiceDAO {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
+	        return services;
+	    }
+	    public List<Service> getFilteredAndSortedServices(Integer categoryID, BigDecimal minPrice, BigDecimal maxPrice, String sortBy, String timeFrame) {
+	        List<Service> services = new ArrayList<>();
+	        String sql = "CALL GetFilteredAndSortedServices(?, ?, ?, ?, ?)";
+
+	        try (Connection conn = DBConnection.getConnection();
+	             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+	            stmt.setObject(1, categoryID, Types.INTEGER);
+	            stmt.setBigDecimal(2, minPrice);
+	            stmt.setBigDecimal(3, maxPrice);
+	            stmt.setString(4, sortBy);
+	            stmt.setString(5, timeFrame);
+
+	            try (ResultSet rs = stmt.executeQuery()) {
+	                while (rs.next()) {
+	                    Service service = new Service();
+	                    service.setServiceId(rs.getInt("ServiceID"));
+	                    service.setServiceName(rs.getString("ServiceName"));
+	                    service.setDescription(rs.getString("Description"));
+	                    service.setPrice(rs.getDouble("Price"));
+	                    service.setImagePath(rs.getString("ImageURL"));
+	                    service.setCategoryId(rs.getInt("CategoryID")); // Include category ID
+	                    service.setCategoryName(rs.getString("CategoryName")); // Include category name
+	                    service.setPopularity(rs.getInt("Popularity"));
+	                    service.setAverageRating(rs.getDouble("AverageRating"));
+	                    services.add(service);
+	                }
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+
 	        return services;
 	    }
 

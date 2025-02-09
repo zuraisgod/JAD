@@ -5,9 +5,11 @@ public class Service {
     private String serviceName;
     private String description;
     private double price;
-    private String imagePath; 
-    private int categoryId;   
-    private String categoryName; 
+    private String imagePath; // Matches ImageURL
+    private int categoryId;
+    private String categoryName; // Add category name
+    private int popularity;
+    private double averageRating;
 
     // Getters and Setters
     public int getServiceId() {
@@ -64,5 +66,21 @@ public class Service {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public int getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(int popularity) {
+        this.popularity = popularity;
+    }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
     }
 }

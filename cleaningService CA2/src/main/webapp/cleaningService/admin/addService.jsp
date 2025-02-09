@@ -34,24 +34,25 @@
         <div class="message error">❌ Failed to add service. Please try again.</div>
     <% } %>
 
-    <form action="<%=request.getContextPath()%>/admin/addService" method="post">
-        <label>Service Name:</label>
-        <input type="text" name="serviceName" required>
+<form action="<%=request.getContextPath()%>/admin/addService" method="post" enctype="multipart/form-data">
+    <label>Service Name:</label>
+    <input type="text" name="serviceName" required>
 
-        <label>Description:</label>
-        <textarea name="description" required></textarea>
+    <label>Description:</label>
+    <textarea name="description" required></textarea>
 
-        <label>Price:</label>
-        <input type="number" step="0.01" name="price" required>
+    <label>Price:</label>
+    <input type="number" step="0.01" name="price" required>
 
-        <label>Image Path:</label>
-        <input type="text" name="imagePath">
+    <label>Upload Image:</label>
+    <input type="file" name="image" accept="image/*" required>
 
-        <label>Category ID:</label>
-        <input type="number" name="categoryId" required>
+    <label>Category ID:</label>
+    <input type="number" name="categoryId" required>
 
-        <input type="submit" value="Add Service">
-    </form>
+    <input type="submit" value="Add Service">
+</form>
+
     <br>
     <a href="adminDashboard.jsp">Back to Dashboard</a>
 </body>

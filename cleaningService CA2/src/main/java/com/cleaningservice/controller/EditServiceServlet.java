@@ -2,10 +2,12 @@ package com.cleaningservice.controller;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -14,22 +16,23 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
-/**
- * Servlet implementation class EditServiceServlet
- */
 @WebServlet("/admin/editService")
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 2, // 2MB threshold
+    maxFileSize = 1024 * 1024 * 10, // 10MB max file size
+    maxRequestSize = 1024 * 1024 * 50 // 50MB max request size
+)
 public class EditServiceServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final String UPLOAD_DIR = "/cleaningService/images";
 
-    /**
-     * Handles GET requests to fetch service details and forward to editService.jsp.
-     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int serviceId = Integer.parseInt(request.getParameter("serviceId"));
 
-        // Fetch service details from Spring Boot API
         Client client = ClientBuilder.newClient();
         String restUrl = "http://localhost:8081/api/services/service/" + serviceId;
         WebTarget target = client.target(restUrl);
@@ -42,26 +45,31 @@ public class EditServiceServlet extends HttpServlet {
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("/cleaningService/admin/editService.jsp");
             dispatcher.forward(request, response);
-            return; // ✅ Prevents further response processing
+            return;
         } else {
             response.sendRedirect(request.getContextPath() + "/cleaningService/admin/adminDashboard.jsp?error=ServiceNotFound");
-            return; // ✅ Stops execution after redirect
+            return;
         }
-
     }
 
-    /**
-     * Handles POST requests to update a service.
-     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int serviceId = Integer.parseInt(request.getParameter("serviceId"));
         String serviceName = request.getParameter("serviceName");
         String description = request.getParameter("description");
         double price = Double.parseDouble(request.getParameter("price"));
-        String imagePath = request.getParameter("imagePath");
         int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+        
+        Part filePart = request.getPart("image");
+        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+        String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+        String filePath = uploadPath + File.separator + fileName;
+        filePart.write(filePath);
+        String imagePath = "/cleaningService/images/" + fileName;
 
-        // Construct JSON request body
         String jsonInputString = "{" +
                 "\"serviceName\": \"" + serviceName + "\"," +
                 "\"description\": \"" + description + "\"," +
@@ -69,7 +77,6 @@ public class EditServiceServlet extends HttpServlet {
                 "\"imagePath\": \"" + imagePath + "\"," +
                 "\"categoryId\": " + categoryId + "}";
 
-        // Create a REST client to communicate with Spring Boot API
         Client client = ClientBuilder.newClient();
         String restUrl = "http://localhost:8081/api/services/" + serviceId;
         WebTarget target = client.target(restUrl);
@@ -84,7 +91,6 @@ public class EditServiceServlet extends HttpServlet {
         } else {
             System.out.println("Error: Failed to update service");
             response.sendRedirect(request.getContextPath() +"/cleaningService/admin/editService.jsp?serviceId=" + serviceId + "&error=UpdateFailed");
-        }
+       }
     }
 }
-

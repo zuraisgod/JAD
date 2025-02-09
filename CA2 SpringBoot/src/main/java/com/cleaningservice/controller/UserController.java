@@ -17,7 +17,18 @@ import java.util.List;
 public class UserController {
 
     private final UserDAO userDAO = new UserDAO();
+    @GetMapping("/members")
+    public List<User> getAllMembers() {
+        return userDAO.getAllMembers();
+    }
+    @GetMapping("/sorted")
+    public ResponseEntity<List<User>> getSortedUsers(
+            @RequestParam(required = false, defaultValue = "value") String sortBy) {
 
+        List<User> users = userDAO.sortUsers(sortBy);
+
+        return ResponseEntity.ok(users);
+    }
     @GetMapping("/{userID}")
     public User getUserDetails(@PathVariable int userID) {
         return userDAO.getUserByID(userID);
@@ -105,9 +116,8 @@ public class UserController {
     public List<User> getAllUsers() {
         return userDAO.getAllUsers();
     }
-    @GetMapping("/members")
-    public List<User> getAllMembers() {
-        return userDAO.getAllMembers();
-    }
+
+
+
 
 }

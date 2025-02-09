@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.cleaningservice.model.Service" %>
 <%
-    Service service = (Service) session.getAttribute("service"); // ✅ Use session
+    Service service = (Service) session.getAttribute("service");
     if (service == null) {
         response.sendRedirect(request.getContextPath() + "/cleaningService/admin/adminDashboard.jsp?error=ServiceNotFound");
         return;
@@ -22,7 +22,7 @@
 </head>
 <body>
     <h2>Edit Service</h2>
-    <form action="<%=request.getContextPath()%>/admin/editService" method="post">
+    <form action="<%=request.getContextPath()%>/admin/editService" method="post" enctype="multipart/form-data">
 
         <input type="hidden" name="serviceId" value="<%= service.getServiceId() %>">
         <label>Service Name:</label>
@@ -34,8 +34,11 @@
         <label>Price:</label>
         <input type="number" step="0.01" name="price" value="<%= service.getPrice() %>" required>
         
-        <label>Image Path:</label>
-        <input type="text" name="imagePath" value="<%= service.getImagePath() %>">
+        <label>Current Image:</label>
+        <img src="<%= request.getContextPath() %>/<%= service.getImagePath() %>" alt="Service Image" style="max-width: 100px; display: block;">
+        
+        <label>Upload New Image:</label>
+        <input type="file" name="image" accept="image/*">
         
         <label>Category ID:</label>
         <input type="number" name="categoryId" value="<%= service.getCategoryId() %>" required>
@@ -47,11 +50,11 @@
     <input type="submit" value="Delete Service" onclick="return confirmDelete();">
     </form>
 
-	<script>
-	    function confirmDelete() {
-	        return confirm("Are you sure you want to delete this service?");
-	    }
-	</script>
+    <script>
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete this service?");
+        }
+    </script>
     
     <br>
     <a href="<%=request.getContextPath()%>/admin/dashboard">Back to Dashboard</a>

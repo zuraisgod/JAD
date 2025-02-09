@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.ArrayList, com.cleaningservice.model.Service" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="com.cleaningservice.model.Service" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,18 +21,18 @@
             border-radius: 8px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
-        .message {
-            font-weight: bold;
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 5px;
+        .container-table {
+            max-height: 700px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
         }
-        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .filter-form {
+            margin-bottom: 20px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 20px;
             background: white;
         }
         th, td {
@@ -69,63 +71,85 @@
         button:hover {
             opacity: 0.8;
         }
-        .container-table {
-		    max-height: 700px; /* Adjust height as needed */
-		    overflow-y: auto;
-		    border: 1px solid #ddd;
-		}
-        
     </style>
+    <script>
+        function toggleTimeFrame() {
+            var sortBy = document.getElementById("sortBy").value;
+            var timeFrameDiv = document.getElementById("timeFrameDiv");
+            if (sortBy === "popularity") {
+                timeFrameDiv.style.display = "inline";
+            } else {
+                timeFrameDiv.style.display = "none";
+            }
+        }
+    </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Dashboard</h1>
-        <form action="<%=request.getContextPath()%>/admin/searchService" method="GET">
-            <input type="text" name="keyword" placeholder="Search services...">
-            <button type="submit">Search</button>
+
+<!-- Include Navigation Bar -->
+<jsp:include page="navigation.jsp" />
+
+<div class="container">
+    <h1>Admin Dashboard</h1>
+
+    <!-- Search Bar -->
+    <form action="<%=request.getContextPath()%>/admin/searchService" method="GET">
+        <input type="text" name="keyword" placeholder="Search services...">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Buttons -->
+    <div class="buttons">
+        <a href="<%=request.getContextPath()%>/cleaningService/admin/addService.jsp">
+            <button class="btn-add">➕ Add New Service</button>
+        </a>
+        <form action="<%=request.getContextPath()%>/admin/dashboard" style="display:inline;">
+            <button class="btn-refresh">🔄 Refresh Services</button>
         </form>
-        <%-- Display success and error messages --%>
-        <% String success = request.getParameter("success"); %>
-        <% String error = request.getParameter("error"); %>
+    </div>
 
-        <% if (success != null) { %>
-            <div class="message success">
-                <%= success.equals("ServiceUpdated") ? "✅ Service updated successfully!" : "" %>
-                <%= success.equals("ServiceDeletedSuccessfully") ? "✅ Service deleted successfully!" : "" %>
-                <%= success.equals("ServiceAddedSuccessfully") ? "✅ Service added successfully!" : "" %>
-            </div>
-        <% } %>
+    <!-- Sorting & Filtering Form -->
+    <form action="<%=request.getContextPath()%>/admin/filtered-services" method="get" class="filter-form">
+        <label for="categoryId">Category ID:</label>
+        <input type="number" id="categoryId" name="categoryID" min="1">
 
-        <% if (error != null) { %>
-            <div class="message error">
-                <%= error.equals("UpdateFailed") ? "❌ Service update failed!" : "" %>
-                <%= error.equals("ServiceNotFound") ? "❌ Service not found!" : "" %>
-                <%= error.equals("ServerError") ? "❌ Internal server error!" : "" %>
-                <%= error.equals("DeleteFailed") ? "❌ Service deletion failed!" : "" %>
-            </div>
-        <% } %>
+        <label for="minPrice">Min Price:</label>
+        <input type="number" id="minPrice" name="minPrice" step="0.01" value="0.00" required>
 
-        <div class="buttons">
-            <a href="<%=request.getContextPath()%>/cleaningService/admin/addService.jsp">
-                <button class="btn-add">➕ Add New Service</button>
-            </a>
-            <form action="<%=request.getContextPath()%>/admin/dashboard" style="display:inline;">
-                <button class="btn-refresh">🔄 Refresh Services</button>
-            </form>
+        <label for="maxPrice">Max Price:</label>
+        <input type="number" id="maxPrice" name="maxPrice" step="0.01" value="50" required>
+
+        <label for="sortBy">Sort By:</label>
+        <select id="sortBy" name="sortBy" onchange="toggleTimeFrame()">
+            <option value="popularity">Popularity</option>
+            <option value="rating">Rating</option>
+        </select>
+
+        <div id="timeFrameDiv" style="display: inline;">
+            <label for="timeFrame">Time Frame:</label>
+            <select id="timeFrame" name="timeFrame">
+                <option value="month">Month</option>
+                <option value="year">Year</option>
+                <option value="all">All Time</option>
+            </select>
         </div>
 
-        <h2>List of Services</h2>
-<div class="container-table">
-        <table >
+        <button type="submit">Filter</button>
+    </form>
+
+    <h2>List of Services</h2>
+    <div class="container-table">
+        <table>
             <thead>
                 <tr>
                     <th>Service ID</th>
                     <th>Service Name</th>
                     <th>Description</th>
                     <th>Price</th>
-                    <th>Category</th>
+                    <th>Category ID</th>
+                    <th>Category Name</th>
                     <th>Image</th>
-                    <th>Action</th> <%-- Edit button column --%>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -140,8 +164,9 @@
                         <td><%= service.getServiceName() %></td>
                         <td><%= service.getDescription() %></td>
                         <td>$<%= service.getPrice() %></td>
+                        <td><%= service.getCategoryId() %></td>
                         <td><%= service.getCategoryName() %></td>
-                        <td><img src="<%= service.getImagePath() %>" alt="Service Image" width="50"></td>
+                        <td><img src="<%= request.getContextPath() %><%= service.getImagePath() %>" alt="Service Image" width="50"></td>
                         <td>
                             <a href="<%=request.getContextPath()%>/admin/editService?serviceId=<%= service.getServiceId() %>">
                                 <button class="btn-edit">✏️ Edit</button>
@@ -153,14 +178,69 @@
                     } else {
                 %>
                     <tr>
-                        <td colspan="7">No services found.</td>
+                        <td colspan="8">No services found.</td>
                     </tr>
                 <%
                     }
                 %>
             </tbody>
         </table>
-        </div>
     </div>
+
+    <!-- Filtered Services Table -->
+    <h2>Filtered Services</h2>
+    <div class="container-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Service ID</th>
+                    <th>Service Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Category ID</th>
+                    <th>Category Name</th>
+                    <th>Popularity</th>
+                    <th>Average Rating</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%
+                    ArrayList<Service> filteredServices = (ArrayList<Service>) request.getAttribute("filteredServices");
+                    if (filteredServices != null && !filteredServices.isEmpty()) {
+                        for (Service service : filteredServices) {
+                %>
+                    <tr>
+                        <td><%= service.getServiceId() %></td>
+                        <td><%= service.getServiceName() %></td>
+                        <td><%= service.getDescription() %></td>
+                        <td>$<%= service.getPrice() %></td>
+                        <td><%= service.getCategoryId() %></td>
+                        <td><%= service.getCategoryName() %></td>
+                        <td><%= service.getPopularity() %></td>
+                        <td><%= service.getAverageRating() %></td>
+                        <td><img src="<%= request.getContextPath() %><%= service.getImagePath() %>" width="50"></td>
+                        <td>
+                            <a href="<%=request.getContextPath()%>/admin/editService?serviceId=<%= service.getServiceId() %>">
+                                <button class="btn-edit">✏️ Edit</button>
+                            </a>
+                        </td>
+                    </tr>
+                <%
+                        }
+                    } else {
+                %>
+                    <tr>
+                        <td colspan="9">No filtered services available.</td>
+                    </tr>
+                <%
+                    }
+                %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 </body>
 </html>

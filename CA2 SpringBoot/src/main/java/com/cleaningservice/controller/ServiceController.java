@@ -6,8 +6,7 @@ import com.cleaningservice.model.Service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
-
+import java.math.BigDecimal;
 @RestController
 @RequestMapping("/api/services")
 
@@ -74,6 +73,18 @@ public class ServiceController {
     @GetMapping("/search")
     public List<Service> searchServices(@RequestParam String keyword) {
         return serviceDAO.searchServices(keyword);
+    }
+    @GetMapping("/filtered")
+    public ResponseEntity<List<Service>> getFilteredAndSortedServices(
+            @RequestParam(required = false) Integer categoryID,
+            @RequestParam(required = false, defaultValue = "0.00") BigDecimal minPrice,
+            @RequestParam(required = false, defaultValue = "99999.99") BigDecimal maxPrice,
+            @RequestParam(required = false, defaultValue = "popularity") String sortBy,
+            @RequestParam(required = false, defaultValue = "all") String timeFrame) {
+
+        List<Service> services = serviceDAO.getFilteredAndSortedServices(categoryID, minPrice, maxPrice, sortBy, timeFrame);
+
+        return ResponseEntity.ok(services);
     }
     
 }

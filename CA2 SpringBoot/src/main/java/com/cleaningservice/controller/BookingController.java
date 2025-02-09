@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map; // Add this import statement!
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -19,7 +20,13 @@ public class BookingController {
     public List<Map<String, Object>> getCompletedBookings(@PathVariable int userId) {
         return bookingDAO.getCompletedBookings(userId);
     }
-
+    
+    @GetMapping
+    public List<Map<String, Object>> getAllBookings() {
+        return bookingDAO.getAllBookingsWithDetails();
+    }
+    
+    
     @PostMapping
     public String createBooking(@RequestParam int userID,
                                 @RequestParam int serviceID,
@@ -39,5 +46,28 @@ public class BookingController {
         } else {
             return "Failed to create booking.";
         }
+    }
+    
+    @GetMapping("/{bookingId}")
+    public Map<String, Object> getBookingDetails(@PathVariable int bookingId) {
+        return bookingDAO.getBookingDetails(bookingId);
+    }
+
+    
+    @PutMapping("/{bookingId}/status")
+    public ResponseEntity<String> updateBookingStatus(@PathVariable int bookingId, @RequestBody Map<String, String> requestBody) {
+        String newStatus = requestBody.get("status");
+        System.out.println("Booking ID: " + bookingId); // Debugging
+        System.out.println("New Status: " + newStatus); // Debugging
+
+        boolean success = bookingDAO.updateBookingStatus(bookingId, newStatus);
+        if (success) {
+            System.out.println("Status updated successfully in the database."); // Debugging
+            return ResponseEntity.ok("Booking status updated successfully.");
+        } else {
+            System.out.println("Failed to update status in the database."); // Debugging
+            return ResponseEntity.status(500).body("Failed to update booking status.");
+        }
+
     }
 }
