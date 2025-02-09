@@ -22,29 +22,33 @@
 </head>
 <body>
     <h2>Edit Service</h2>
-    <form action="<%=request.getContextPath()%>/admin/editService" method="post" enctype="multipart/form-data">
+<form action="<%=request.getContextPath()%>/admin/editService" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="serviceId" value="<%= service.getServiceId() %>">
+    
+    <label>Service Name:</label>
+    <input type="text" name="serviceName" value="<%= service.getServiceName() %>" required>
+    
+    <label>Description:</label>
+    <textarea name="description" required><%= service.getDescription() %></textarea>
+    
+    <label>Price:</label>
+    <input type="number" step="0.01" name="price" value="<%= service.getPrice() %>" required>
+    
+    <label>Current Image:</label>
+    <img src="<%= request.getContextPath() %>/<%= service.getImagePath() %>" alt="Service Image" style="max-width: 100px; display: block;">
 
-        <input type="hidden" name="serviceId" value="<%= service.getServiceId() %>">
-        <label>Service Name:</label>
-        <input type="text" name="serviceName" value="<%= service.getServiceName() %>" required>
-        
-        <label>Description:</label>
-        <textarea name="description" required><%= service.getDescription() %></textarea>
-        
-        <label>Price:</label>
-        <input type="number" step="0.01" name="price" value="<%= service.getPrice() %>" required>
-        
-        <label>Current Image:</label>
-        <img src="<%= request.getContextPath() %>/<%= service.getImagePath() %>" alt="Service Image" style="max-width: 100px; display: block;">
-        
-        <label>Upload New Image:</label>
-        <input type="file" name="image" accept="image/*">
-        
-        <label>Category ID:</label>
-        <input type="number" name="categoryId" value="<%= service.getCategoryId() %>" required>
-        
-        <input type="submit" value="Update Service">
-    </form>
+    <!-- Hidden input to send existing image path -->
+    <input type="hidden" name="existingImage" value="<%= service.getImagePath() %>">
+    
+    <label>Upload New Image:</label>
+    <input type="file" name="image" accept="image/*">
+    
+    <label>Category ID:</label>
+    <input type="number" name="categoryId" value="<%= service.getCategoryId() %>" required>
+    
+    <input type="submit" value="Update Service">
+</form>
+
     <form id="deleteForm" action="<%=request.getContextPath()%>/admin/deleteService" method="post">
     <input type="hidden" name="serviceId" value="<%= service.getServiceId() %>">
     <input type="submit" value="Delete Service" onclick="return confirmDelete();">

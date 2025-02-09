@@ -58,23 +58,33 @@ public class EditServiceServlet extends HttpServlet {
         String description = request.getParameter("description");
         double price = Double.parseDouble(request.getParameter("price"));
         int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-        
-        Part filePart = request.getPart("image");
-        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-        String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
-        }
-        String filePath = uploadPath + File.separator + fileName;
-        filePart.write(filePath);
-        String imagePath = "/cleaningService/images/" + fileName;
 
+        // Retrieve the existing image path
+        String existingImagePath = request.getParameter("existingImage");
+
+        // Process the uploaded file
+        Part filePart = request.getPart("image");
+        String fileName = filePart != null ? Paths.get(filePart.getSubmittedFileName()).getFileName().toString() : "";
+        String imagePath = existingImagePath; // Default to existing image
+
+        if (filePart != null && fileName != null && !fileName.isEmpty()) {
+            String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+            
+            String filePath = uploadPath + File.separator + fileName;
+            filePart.write(filePath);
+            imagePath = "/cleaningService/images/" + fileName; // Set new image path
+        }
+
+        // Prepare JSON payload
         String jsonInputString = "{" +
                 "\"serviceName\": \"" + serviceName + "\"," +
                 "\"description\": \"" + description + "\"," +
                 "\"price\": " + price + "," +
-                "\"imagePath\": \"" + imagePath + "\"," +
+                "\"imagePath\": \"" + imagePath + "\"," +  // Use existing image if no new one
                 "\"categoryId\": " + categoryId + "}";
 
         Client client = ClientBuilder.newClient();
@@ -83,14 +93,13 @@ public class EditServiceServlet extends HttpServlet {
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
 
         Response resp = invocationBuilder.put(Entity.entity(jsonInputString, MediaType.APPLICATION_JSON));
-        System.out.println("Response Status: " + resp.getStatus());
 
         if (resp.getStatus() == Response.Status.OK.getStatusCode()) {
-            System.out.println("Success: Service updated");
             response.sendRedirect(request.getContextPath() +"/admin/dashboard?success=ServiceUpdated");
         } else {
-            System.out.println("Error: Failed to update service");
             response.sendRedirect(request.getContextPath() +"/cleaningService/admin/editService.jsp?serviceId=" + serviceId + "&error=UpdateFailed");
-       }
+        }
     }
+
+
 }
