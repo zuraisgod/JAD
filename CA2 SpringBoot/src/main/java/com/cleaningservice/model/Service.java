@@ -1,11 +1,10 @@
 package com.cleaningservice.model;
-
 public class Service {
     private int serviceId;
     private String serviceName;
     private String description;
     private double price;
-    private String imagePath; 
+    private String imagePath; // Matches the logic in DAO
     private int categoryId;   
     private String categoryName; 
 
@@ -43,13 +42,14 @@ public class Service {
     }
 
     public String getImagePath() {
-        return imagePath;
+        return imagePath; // Updated getter name
     }
 
     public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+        this.imagePath = imagePath; // Updated setter name
     }
-
+    
+    /*Alex */
     public int getCategoryId() {
         return categoryId;
     }

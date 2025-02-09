@@ -87,7 +87,15 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting account.");
         }
     }
-    
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable int id) {
+        boolean isDeleted = userDAO.deleteUserByID(id);
+        if (isDeleted) {
+            return "User deleted successfully";
+        } else {
+            return "Failed to delete User or User not found";
+        }
+    }
     @GetMapping("/{userId}/bookings")
     public List<Map<String, Object>> getUserBookings(@PathVariable int userId) {
         return userDAO.getUserBookings(userId);

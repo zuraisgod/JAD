@@ -147,6 +147,8 @@ public class UserDAO {
         }
         return bookings;
     }
+
+//*alex features**/
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";

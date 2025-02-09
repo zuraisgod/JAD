@@ -47,6 +47,8 @@ public class ServiceCategoryDAO {
 
         return categories;
     }
+    
+    /*Alex codes*/
     public ServiceCategory getServiceCategoryById(int categoryId) {
         ServiceCategory category = null;
         Connection conn = null;
