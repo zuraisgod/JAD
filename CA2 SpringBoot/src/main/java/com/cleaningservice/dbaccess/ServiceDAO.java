@@ -1,10 +1,10 @@
 package com.cleaningservice.dbaccess;
 
 import com.cleaningservice.model.Service;
-import com.cleaningservice.model.ServiceCategory;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import com.cleaningservice.model.ServiceCategory;
 
 public class ServiceDAO {
 	public List<Service> getServicesByCategory(int categoryId) {
@@ -48,10 +48,11 @@ public class ServiceDAO {
 
 	        return price;
 	    }
-
+	  
+	  /*Alex service part*/
 	    private final ServiceCategoryDAO serviceCategoryDAO = new ServiceCategoryDAO();
 
-	    public Service getServiceDetails(int serviceId) {
+	  public Service getServiceDetails(int serviceId) {
 	        String sql = "SELECT s.ServiceID, s.ServiceName, s.Description, s.Price, s.ImageURL, s.CategoryID " +
 	                     "FROM Service s " +
 	                     "WHERE s.ServiceID = ?";
@@ -189,6 +190,7 @@ public class ServiceDAO {
 	        }
 	        return services;
 	    }
+
 
 
 }

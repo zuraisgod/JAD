@@ -92,44 +92,71 @@
             background-color: #45a049;
         }
     </style>
+      <script>
+        // JavaScript for Updating Quantity
+        function updateQuantity(serviceId, change) {
+            const userId = '<%= session.getAttribute("userId") %>'; // Get userId from session
+            const action = (change > 0) ? "increase" : "decrease";
+
+            fetch(`/api/cart/${action}/${userId}/${serviceId}`, {
+                method: 'PUT',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Reload page to reflect updated cart
+                } else {
+                    alert(data.message || "Failed to update quantity");
+                }
+            })
+            .catch(error => {
+                console.error("Error updating quantity:", error);
+            });
+        }
+    </script>
 </head>
 <body>
     <h1>Your Cart</h1>
+    <form action="proceedToCheckout" method="post">
     <table>
         <thead>
             <tr>
+                <th>Select</th>
                 <th>Service Name</th>
                 <th>Quantity</th>
                 <th>Price</th>
                 <th>Total</th>
+                <th>Date & Time</th>
             </tr>
         </thead>
         <tbody>
             <c:forEach var="item" items="${cartItems}">
                 <tr>
+                    <td><input type="checkbox" name="selectedItems" value="${item.serviceId}" /></td>
                     <td>${item.serviceName}</td>
+                    
                     <td>
                         <div class="quantity-controls">
-                            <button onclick="decreaseQuantity(${item.serviceId})">-</button>
+                            <button onclick="updateQuantity(${item.serviceId}, -1)">-</button>
                             ${item.quantity}
-                            <button onclick="increaseQuantity(${item.serviceId})">+</button>
+                            <button onclick="updateQuantity(${item.serviceId}, 1)">+</button>
                         </div>
                     </td>
                     <td>$${item.price}</td>
                     <td>$${item.totalPrice}</td>
+                    <td>
+                        <input type="datetime-local" name="serviceDateTime_${item.serviceId}" required />
+                    </td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
     <div class="grand-total">
-        Grand Total: $<c:out value="${grandTotal}"/>
+        Grand Total: $<c:out value="${grandTotal}" />
     </div>
-    <div class="buttons-container">
-    <button onclick="location.href='proceedBooking.jsp'">Proceed to Book</button>
-    <form action="<%=request.getContextPath()%>/clearCartServlet" method="post" style="display: inline;">
-        <button type="submit">Clear Cart</button>
-    </form>
-</div>
+    <button type="submit">Proceed to Checkout</button>
+</form>
+
 
 </body>
 </html>
